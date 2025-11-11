@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I Love You 3D</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      position: relative;
+      z-index: 2;
+    }
+
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      width: 200px;
+      border-radius: 12px;
+      opacity: 0.4;
+      box-shadow: 0 0 40px 10px rgba(255, 102, 204, 0.8);
+    }
+
+    /* Tombol kucing imut */
+    #catButton {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      z-index: 3;
+      background-color: #ffb6c1;
+      border: none;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      cursor: pointer;
+      box-shadow: 0 0 20px #ff66cc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Comic Sans MS', cursive;
+      color: #fff;
+      font-size: 14px;
+      text-shadow: 0 0 5px #ff66cc;
+      animation: floaty 2s ease-in-out infinite;
+    }
+
+    #catButton:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px #ff99dd;
+    }
+
+    /* Wajah kucing imut */
+    .cat-face {
+      font-size: 28px;
+      line-height: 20px;
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Musik -->
+  <audio id="musik" loop>
+    <source src="https://h.top4top.io/m_35986ov5m1.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Tombol berbentuk kucing -->
+  <button id="catButton">
+    <div class="cat-face">🐱</div>
+    Push Me
+  </button>
+
+  <script>
+    const catButton = document.getElementById('catButton');
+    const audio = document.getElementById('musik');
+
+    catButton.addEventListener('click', () => {
+      audio.play();
+      catButton.style.display = 'none'; // sembunyikan tombol setelah ditekan
+    });
+  </script>
+
+  <!-- Import Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Setup scene, camera, renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Text style
+    const fontLoader = new THREE.FontLoader();
+    const textGroup = new THREE.Group();
+    scene.add(textGroup);
+
+    fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+      const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff66cc });
+      
+      for (let i = 0; i < 360; i += 8) {
+        const angle = i * Math.PI / 180;
+        const x = 16 * Math.pow(Math.sin(angle), 3);
+        const y = 13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle);
+
+        const textGeo = new THREE.TextGeometry("I Love You", {
+          font: font,
+          size: 0.8,
+          height: 0.05,
+        });
+
+        const textMesh = new THREE.Mesh(textGeo, textMaterial);
+        textMesh.position.set(x, y, 0);
+        textMesh.rotation.y = angle;
+        textGroup.add(textMesh);
+      }
+    });
+
+    camera.position.z = 40;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      textGroup.rotation.y += 0.01;
+      textGroup.rotation.x += 0.002;
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+  <!-- Gambar di tengah tapi di belakang animasi -->
+  <img src="https://b.top4top.io/p_3602bwgq61.jpeg" alt="foto imut">
+</body>
+</html>
